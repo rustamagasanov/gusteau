@@ -68,7 +68,14 @@ Provisioning a server
 The following command will run all roles and recipes from node's YAML file.
 
 ```
-gusteau node-name provision
+gusteau -n node-name provision
+```
+
+You can avoid typing `-n node-name` each time by exporting a `GUSTEAU_NODE` environment variable:
+
+```
+export GUSTEAU_NODE="production-server"
+gusteau provision
 ```
 
 Use the `--bootstrap` or `-b` flag to bootstrap chef-solo (for the first time run).
@@ -78,7 +85,7 @@ Running recipes
 You may choose to run a few recipes instead of full provisioning.
 
 ```
-gusteau node-name run redis::server ntp unicorn
+gusteau -n node-name run redis::server ntp unicorn
 ```
 
 SSH
@@ -86,7 +93,7 @@ SSH
 Gusteau provides a useful shortcut that you may use to ssh into a node. If you haven't got passwordless authentication set up, Gusteau will use `user` and `password` values from the node configuration.
 
 ```
-gusteau ssh node-name
+gusteau -n node-name ssh
 ```
 
 Using with Vagrant
@@ -95,7 +102,7 @@ At the moment Gusteau doesn't come with Vagrant integration. However, using it w
 
 ```
 vagrant up
-gusteau node-name provision
+gusteau provision
 ```
 
 Notes

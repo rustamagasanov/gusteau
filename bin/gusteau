@@ -1,51 +1,75 @@
 #!/usr/bin/env ruby
 
 require 'rubygems'
-require 'optitron'
+require 'gli'
 
 $LOAD_PATH << File.expand_path("../..", __FILE__)
 require 'lib/gusteau'
 
-class Gusteau::CLI < Optitron::CLI
+include GLI::App
 
-  class_opt 'bootstrap', 'Install chef-solo'
-  class_opt 'format',    'Output format to use', :short_name => 'F', :type => :string
-  class_opt 'log_level', 'Set the log level',    :in => %w{debug info warn error fatal}
-  class_opt 'why-run',   'Enable whyrun mode',   :short_name => 'W'
+program_desc Gusteau::DESCRIPTION
+version      Gusteau::VERSION
+sort_help    :manually
 
-  desc 'Fully provision a node'
-  def provision(node_name)
-    node(node_name).provision(params)
+default_node = ENV['GUSTEAU_NODE'] || 'vagrant'
+
+desc 'Node to use'
+flag [:n, :node], :arg_name => 'node', :default_value => default_node
+
+desc 'Install chef-solo'
+switch [:b, :bootstrap], :negatable => false
+
+desc 'Output format to use'
+flag ['F', 'format'], :arg_name => 'format'
+
+desc 'Set the log level'
+flag ['l', 'log_level'], :arg_name => 'log_level'
+
+desc 'Enable whyrun node'
+switch ['W', 'why-run'], :negatable => false
+
+on_error {}
+
+desc 'Fully provision a node'
+command 'provision' do |c|
+  c.action do |global, options, args|
+    node(global[:node]).provision(options.merge global)
   end
-
-  desc 'Run recipe(s)'
-  def run(node_name, *recipe)
-    node(node_name).run(params, recipe)
-  end
-
-  desc 'SSH into a node'
-  def ssh(node_name)
-    node(node_name).ssh
-  end
-
-  desc 'Generate an example project (a bureau)'
-  def generate(bureau_name)
-    Gusteau::Bureau.new(bureau_name)
-  end
-
-  private
-
-  def node(node_name)
-    unless node_path = Dir.glob("./nodes/**/#{node_name}.yml")[0]
-      abort "Node '#{node_name}' is unknown. Known nodes are #{nodes_list.join(', ')}."
-    end
-    Gusteau::Node.new(node_path)
-  end
-
-  def nodes_list
-    Dir.glob("./nodes/**/*.yml").map { |f| File.basename(f, '.*') }
-  end
-
 end
 
-Gusteau::CLI.dispatch
+desc 'Run recipe(s)'
+command 'run' do |c|
+  c.arg_name 'recipe', :multiple
+
+  c.action do |global, options, args|
+    node(global[:node]).run(options.merge global, args)
+  end
+end
+
+desc 'SSH into a node'
+command 'ssh' do |c|
+  c.action do |global, options, args|
+    node(global[:node]).ssh
+  end
+end
+
+desc 'Generate an example project (a bureau)'
+command 'generate' do |c|
+  c.action do |global, options, args|
+    Gusteau::Bureau.new(args[0])
+  end
+end
+
+def node(node_name)
+  unless node_path = Dir.glob("./nodes/**/#{node_name}.yml")[0]
+    abort "Node '#{node_name}' is unknown. Known nodes are #{nodes_list.join(', ')}."
+  end
+  Gusteau::Node.new(node_path)
+end
+
+def nodes_list
+  Dir.glob("./nodes/**/*.yml").map { |f| File.basename(f, '.*') }
+end
+
+exit run(ARGV)

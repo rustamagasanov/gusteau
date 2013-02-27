@@ -6,7 +6,7 @@ require 'gusteau/chef'
 
 module Gusteau
   class Node
-    attr_reader :server
+    attr_reader :name, :server
 
     def initialize(path)
       raise "Node YAML file #{path} not found" unless path && File.exists?(path)

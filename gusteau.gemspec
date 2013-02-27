@@ -1,14 +1,14 @@
 # -*- encoding: utf-8 -*-
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'gusteau/version'
+require 'gusteau/metadata'
 
 Gem::Specification.new do |gem|
   gem.name          = "gusteau"
   gem.version       = Gusteau::VERSION
   gem.authors       = ["Vasily Mikhaylichenko", "Chris"]
   gem.email         = ["vasily@locomote.com", "chris@locomote.com"]
-  gem.description   = %q{A fine Chef Solo wrapper}
+  gem.description   = Gusteau::DESCRIPTION
   gem.summary       = %q{Making servers provisioning enjoyable since 2013.}
   gem.homepage      = "http://gusteau.gs"
 
