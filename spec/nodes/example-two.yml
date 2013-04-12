@@ -1,0 +1,12 @@
+json:
+  mysql:
+    server_root_password: correcthorsebatterystaple
+
+recipes:
+  - mysql::server
+
+server:
+  host: staging.exampletwo.com
+  user: devops
+  port: 2222
+  platform: redhat
