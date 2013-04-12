@@ -34,10 +34,5 @@ module Gusteau
       end
       true
     end
-
-    def ssh
-      ssh_expect = File.expand_path("../../../bin/gusteau_ssh_expect", __FILE__)
-      Kernel.system "#{ssh_expect} #{@user}@#{@host} #{@port} #{@password}"
-    end
   end
 end

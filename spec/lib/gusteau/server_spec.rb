@@ -66,11 +66,4 @@ describe Gusteau::Server do
       it     { subject.must_equal "sudo -- sh -c 'cd /etc/chef && touch test'" }
     end
   end
-
-  describe "#ssh" do
-    it "should call gusteau_ssh_expect with connection arguments" do
-      Kernel.expects(:system).with { |arg| arg =~ /gusteau_ssh_expect root@demo.com 2222/ }
-      server.ssh
-    end
-  end
 end
